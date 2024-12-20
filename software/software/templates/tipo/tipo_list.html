@@ -1,0 +1,46 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<h2>Lista de Productos</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Número de receta</th>
+            <th>Tipo de receta</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if recetas %}
+            {% for receta in recetas %}
+            <tr>
+                <td>{{ receta.id }}</td>
+                <td>{{ receta.descripcion.nombre }}</td>  <!-- Mostrar el nombre de la descripción -->
+                <td>
+                    <a class="btn btn-primary" href="{% url 'tipo_editar' receta.id %}">Editar</a>
+                    <a class="btn btn-danger" href="{% url 'tipo_eliminar' receta.id %}">Eliminar</a>
+                    <a class="btn btn-success" href="{% url 'tipo_detalle' receta.id %}">Ver</a>
+                </td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="3">No hay registros de tipos</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+<ul class="pager">
+    <li>
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">Atras</a>
+        {% endif %}
+    </li>
+    <li>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+        {% endif %}
+    </li>
+</ul>
+{% endblock %}

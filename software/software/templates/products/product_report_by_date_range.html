@@ -1,0 +1,23 @@
+<h2>Reporte de Productos Ingresados - Desde {{ start_date }} Hasta {{ end_date }}</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Precio Venta</th>
+            <th>Precio Técnico</th>
+            <th>Cantidad</th>
+            <th>Fecha de Ingreso</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.product_name }}</td>
+            <td>{{ product.selling_price }}</td>
+            <td>{{ product.technical_price }}</td>
+            <td>{{ product.available_quantity }}</td>
+            <td>{{ product.sale_date }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;  /* Mantiene las columnas con tamaño fijo */
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+            word-wrap: break-word;  /* Ajusta el texto largo dentro de las celdas */
+            white-space: normal;  /* Permite que el texto se divida en varias líneas */
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        /* Limitar el ancho de la columna del nombre del producto */
+        td:first-child {
+            width: 20%;  /* Ajusta el ancho de la columna a un 20% del total */
+            max-width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Reporte Diario de Ingreso de Productos del Día - {{ entry_date }}</h2>
+    <h3>Total de Productos Ingresados: {{ total_products }}</h3>
+    <h3>Total de Unidades Ingresadas: {{ total_quantity }}</h3>
+    <table>
+        <thead>
+            <tr>
+                <td>Nombre del Producto</td>
+                <td>Precio</td> <!-- Cambiado a Precio de Entrada -->
+                <td>Cantidades Ingresadas</td>
+                <td>Marca</td>
+                <td>Fecha Ingreso</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in product_entries %}
+            <tr>
+                <td>{{ entry.product.product_name }}</td>
+                <td>{{ entry.entry_price }}</td> <!-- Cambiado a entry_price -->
+                <td>{{ entry.entered_amount }}</td>
+                <td>{{ entry.product.brand }}</td>
+                <td>{{ entry.entry_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

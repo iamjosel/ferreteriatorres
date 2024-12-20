@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- Otros elementos en tu head -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    {% block static %}
+    {% endblock %}
+    <link rel="stylesheet" href="https://bootswatch.com/3/darkly/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" ref="{% static 'css/bootstrap.min.css' %}">
+    <title>{% block title %} Ferretería Torres {% endblock %}</title>
+    <style>
+        /* Estilos CSS para submenús */
+        .navbar-nav .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+        
+        /* Transición suave para mostrar el submenú */
+        .dropdown-menu {
+            display: none;
+            transition: all 0.3s ease;
+        }
+        
+        /* Cambiar color de fondo al pasar por el submenú */
+        .dropdown-menu > li > a:hover {
+            background-color: #444;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    {% block navbar %}
+        <div class="bs-docs-section clearfix">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="bs-component">
+                        <nav class="navbar navbar-default">
+                            <div class="container-fluid">
+                                <div class="navbar-header">
+                                    <a class="navbar-brand custom-home-link" href="{% url 'product_list' %}" title="Ir a la lista de productos">
+                                        <i class="fas fa-boxes"></i> Inventario
+                                    </a>
+                                </div>
+                                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                    <ul class="nav navbar-nav">
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" role="button">
+                                                Gestión de Productos <span class="caret"></span>
+                                            </a>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="{% url 'product_create' %}">Registrar Producto</a></li>
+                                                <li><a href="{% url 'product_entry_create' %}">Registrar Entrada de Producto</a></li>
+                                                <li><a href="{% url 'import_products' %}">Importar Productos</a></li>
+                                            </ul>
+                                        </li>
+                                        <!-- Nueva opción de Clientes -->
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" role="button">
+                                                Gestión de Clientes <span class="caret"></span>
+                                            </a>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="{% url 'customer_create' %}">Registrar Cliente</a></li>
+                                                <li><a href="{% url 'customer_list' %}">Ver Lista de Clientes</a></li>
+                                            </ul>
+                                        </li>
+                                        <!-- Nueva opción de Facturas -->
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" role="button">
+                                                Facturas <span class="caret"></span>
+                                            </a>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <!-- Otras opciones de facturas en caso de que existan -->
+                                            </ul>
+                                        </li>
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" role="button">
+                                                Reportes <span class="caret"></span>
+                                            </a>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="{% url 'product_entry_report_by_date_range' %}">Reporte de Ingresos por Rango de Fechas</a></li>
+                                                <li><a href="{% url 'product_entry_report_day' %}">Reporte de Ingresos Diarios</a></li>
+                                                <li><a href="{% url 'sales_report_by_date_range' %}">Reporte de Ventas por Rango de Fechas</a></li>
+                                                <li><a href="{% url 'sales_report_day' %}">Reporte de Ventas Diarias</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+    
+    {% block content %}
+    <h5>Este es el contenido del archivo</h5>
+    {% endblock %}
+    
+    {% block footer %}
+    {% endblock %}
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+{% block extrajs %}
+{% endblock %}
+</body>
+</html>

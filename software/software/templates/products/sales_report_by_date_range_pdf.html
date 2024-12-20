@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Ventas por Rango de Fechas</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        td:first-child {
+            width: 20%;
+            max-width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Reporte de Ventas del {{ start_date }} al {{ end_date }}</h2>
+    <h3>Total de unidades vendidas: {{ total_sales_quantity }}</h3>
+    <h3>Valor Total de Ventas: {{ total_sales_value }} pesos</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre del Producto</th>
+                <th>Precio Venta</th>
+                <th>Cantidades Vendidas</th>
+                <th>Marca</th>
+                <th>Fecha de Venta</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sale in sales %}
+            <tr>
+                <td>{{ sale.product__product_name }}</td>
+                <td>{{ sale.product__product_entries__entry_price }}</td>
+                <td>{{ sale.total_quantity_sold }}</td>
+                <td>{{ sale.product__brand }}</td>
+                <td>{{ sale.sale_date}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

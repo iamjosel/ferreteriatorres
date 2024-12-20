@@ -1,0 +1,78 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<h2>Reportar Venta</h2>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <div id="formset-container">
+        {% for form in formset %}
+        <div class="form-row">
+            <div class="col">
+                <label for="{{ form.product.id_for_label }}">Producto</label>
+                {{ form.product }}
+            </div>
+            <div class="col">
+                <label for="{{ form.quantity_sold.id_for_label }}">Cantidad Vendida</label>
+                {{ form.quantity_sold }}
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-danger remove-product-btn" title="Eliminar este producto">
+                    <i class="fas fa-trash"></i>
+                </button>
+             </div>
+        </div>
+        <hr>
+        {% endfor %}
+    </div>
+
+    <button type="button" id="add-product-btn" class="btn btn-secondary" title="Agregar un nuevo producto">
+        <i class="fas fa-plus"></i>
+    </button>
+    <button type="submit" class="btn btn-primary" title="Guardar el reporte de venta">
+        <i class="fas fa-save"></i>
+    </button>
+    </form>
+
+<script>
+    document.getElementById('add-product-btn').addEventListener('click', function() {
+        const formsetContainer = document.getElementById('formset-container');
+        const totalForms = document.querySelectorAll('[name="form-TOTAL_FORMS"]')[0];
+        const currentFormCount = parseInt(totalForms.value);
+        const newForm = formsetContainer.children[0].cloneNode(true);
+
+        // Limpiar los valores del nuevo formulario clonado
+        newForm.querySelector('[name$="-product"]').value = "";
+        newForm.querySelector('[name$="-quantity_sold"]').value = "";
+
+        // Actualizar los índices de los nuevos formularios
+        newForm.innerHTML = newForm.innerHTML.replace(/form-\d+/g, `form-${currentFormCount}`);
+        formsetContainer.appendChild(newForm);
+        // Incrementar el número total de formularios
+        totalForms.value = currentFormCount + 1;
+        // Agregar el evento de eliminación al nuevo formulario
+        newForm.querySelector('.remove-product-btn').addEventListener('click', function() {
+            newForm.remove();
+            totalForms.value = formsetContainer.children.length;
+        });
+    });
+
+    // Agregar el evento de eliminación a los formularios existentes
+    document.querySelectorAll('.remove-product-btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            button.closest('.form-row').remove();
+            const totalForms = document.querySelectorAll('[name="form-TOTAL_FORMS"]')[0];
+            totalForms.value = document.getElementById('formset-container').children.length;
+        });
+    });
+</script>
+{% endblock %}

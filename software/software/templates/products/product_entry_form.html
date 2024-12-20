@@ -1,0 +1,15 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<h2>Registrar Entrada de Producto</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary" type="submit" title="Guardar la entrada">
+        <i class="fas fa-save"></i> Guardar
+    </button>
+    <a class="btn btn-default" href="{% url 'product_list' %}" title="Cancelar">
+        <i class="fas fa-times"></i> Cancelar
+    </a>
+</form>
+{% endblock %}

@@ -1,0 +1,11 @@
+<form method="post">
+    {% csrf_token %}
+    <label for="start_date">Fecha inicio:</label>
+    <input type="date" name="start_date" required>
+    <label for="end_date">Fecha fin:</label>
+    <input type="date" name="end_date" required>
+    <button type="submit" class="btn btn-primary" title="Generar el reporte">
+        <i class="fas fa-file-alt"></i>
+    </button>
+    
+</form>

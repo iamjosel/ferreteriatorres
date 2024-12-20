@@ -1,0 +1,35 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<h2>Reporte de Productos Ingresados en {{ date }}</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <td>#</td>
+            <td>Nombre del Producto</td>
+            <td>Cantidad Disponible</td>
+            <td>Precio de Venta</td>
+            <td>Fecha de Ingreso</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% if products %}
+            {% for product in products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>{{ product.product_name }}</td>
+                <td>{{ product.available_quantity }}</td>
+                <td>{{ product.selling_price }}</td>
+                <td>{{ product.sale_date }}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="5"><h1>No hay productos ingresados en esta fecha</h1></td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+<a href="{% url 'product_list' %}" class="btn btn-primary">Volver</a>
+<a href="{% url 'export_product_report' 'pdf' %}?date={{ date }}" class="btn btn-secondary">Exportar a PDF</a>
+<a href="{% url 'export_product_report' 'excel' %}?date={{ date }}" class="btn btn-secondary">Exportar a Excel</a>
+{% endblock %}

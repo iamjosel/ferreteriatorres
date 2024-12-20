@@ -1,0 +1,290 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<form method="GET" action="">
+    <div class="input-group mb-3">
+        <input type="text" name="q" class="form-control" placeholder="Busque por nombre o marca de producto" value="{{ request.GET.q }}">
+        <button class="btn btn-primary" type="submit" title="Buscar productos">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+</form>
+
+<!-- Tabla de productos seleccionados para la venta -->
+<h3>Productos Seleccionados para la Venta</h3>
+<style>
+    .pagination-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #6c757d;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #0f0f0f;
+        border-color: #055c26;
+    }
+</style>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nombre del Producto</th>
+            <th>Cantidad a Vender</th>
+            <th>Marca</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="saleProductList">
+        <!-- Aquí se agregarán los productos con JavaScript -->
+    </tbody>
+</table>
+
+<!-- Botones para manejar la venta -->
+<div>
+    <button class="btn btn-danger" onclick="cancelSale()"><i class="fas fa-times"></i> Cancelar Venta</button>
+    <button class="btn btn-success" onclick="confirmSale()"><i class="fas fa-check"></i> Confirmar Venta</button>
+</div>
+
+<!-- Tabla de productos disponibles -->
+<h3>Lista de productos</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <td>#</td>
+            <td>Nombre del Producto</td>
+            <td>Precio de Venta</td>
+            <td>Cantidad Disponible</td>
+            <td>Marca</td>
+            <td>Fecha Ingreso</td>
+            <td>Acciones</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% if object_list %}
+            {% for producto in object_list %}
+            <tr>
+                <td>{{ producto.id }}</td>
+                <td>{{ producto.product_name }}</td>
+                <td>{{ producto.product_entries.latest.entry_price }}</td>
+                <td>{{ producto.available_quantity }}</td>
+                <td>{{ producto.brand }}</td>
+                <td>{{ producto.product_entries.latest.entry_date }}</td>
+                <td>
+                    <a class="btn btn-warning" onclick="addProductToSale({{ producto.id }}, '{{ producto.product_name }}', {{ producto.available_quantity }}, '{{ producto.brand }}')">
+                        <i class="fas fa-shopping-cart"></i> Vender
+                    </a>
+                    <a class="btn btn-success" href="{% url 'product_detail' producto.id %}"><i class="fas fa-eye"></i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="8">
+                    <h1>No se encontraron productos con ese nombre. Intenta con palabras clave más generales.</h1>
+                </td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+<div class="pagination-wrapper">
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1" aria-label="Primero">
+                        <span aria-hidden="true">&laquo;</span> Primero
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Anterior">
+                        <span aria-hidden="true">&lsaquo;</span> Anterior
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo; Primero</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">&lsaquo; Anterior</span>
+                </li>
+            {% endif %}
+
+            {% for i in paginator.page_range %}
+                {% if page_obj.number == i %}
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+                    </li>
+                {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Siguiente">
+                        Siguiente <span aria-hidden="true">&rsaquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ paginator.num_pages }}" aria-label="Último">
+                        Último <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Siguiente &rsaquo;</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">Último &raquo;</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+<script>
+    // Variable para almacenar los productos seleccionados para la venta
+    let saleProducts = JSON.parse(localStorage.getItem('saleProducts')) || [];
+
+    // Función para agregar productos a la lista de venta
+    function addProductToSale(productId, productName, availableQuantity, brand) {
+        let existingProduct = saleProducts.find(p => p.id === productId);
+        if (existingProduct) {
+            // Si ya existe, simplemente incrementa la cantidad
+            existingProduct.quantity += 1;
+        } else {
+            saleProducts.push({
+                id: productId,
+                name: productName,
+                available: availableQuantity,
+                brand_product: brand,
+                quantity: 0
+            });
+        }
+        saveSaleProducts();
+        renderSaleProductList();
+    }
+    // Función para renderizar la lista de productos seleccionados para la venta
+    function renderSaleProductList() {
+        let saleListContainer = document.getElementById('saleProductList');
+        saleListContainer.innerHTML = ''; // Limpia el contenido anterior
+
+        saleProducts.forEach((product, index) => {
+            saleListContainer.innerHTML += `
+                <tr>
+                    <td>${product.name}</td>
+                    <td><input type="number" value="${product.quantity}" min="1" max="${product.available}" onchange="updateQuantity(${index}, this.value)" /></td>
+                    <td>${product.brand_product}</td>
+                    <td><button class="btn btn-danger" onclick="removeProductFromSale(${index})"><i class="fas fa-trash-alt"></i> Quitar</button></td>
+                </tr>
+            `;
+        });
+    }
+
+    // Función para actualizar la cantidad de un producto
+    function updateQuantity(index, newQuantity) {
+        if (newQuantity > saleProducts[index].available) {
+            alert(`No puedes vender más de la cantidad disponible: ${saleProducts[index].available}`);
+            saleProducts[index].quantity = saleProducts[index].available;
+        } else {
+            saleProducts[index].quantity = newQuantity;
+        }
+        saveSaleProducts();
+    }
+
+
+    // Función para eliminar un producto de la lista de venta
+    function removeProductFromSale(index) {
+        saleProducts.splice(index, 1);
+        saveSaleProducts();
+        renderSaleProductList();
+    }
+
+    // Función para cancelar toda la venta
+    function cancelSale() {
+        if (confirm('¿Estás seguro de que quieres cancelar toda la venta?')) {
+            saleProducts = [];
+            saveSaleProducts();
+            renderSaleProductList();
+        }
+    }
+
+    // Función para confirmar la venta (aquí puedes enviar los datos al backend)
+    // Función para confirmar la venta (aquí puedes enviar los datos al backend)
+    function confirmSale() {
+        if (saleProducts.length === 0) {
+            alert('No hay productos en la venta.');
+            return;
+        }
+
+        // Validación: asegurarse de que las cantidades sean válidas
+        let invalidQuantity = saleProducts.some(product => product.quantity < 1);
+        if (invalidQuantity) {
+            alert('Hay productos con una cantidad inválida. Por favor, asegúrate de que todas las cantidades sean al menos 1.');
+            return;
+        }
+
+        let productIds = saleProducts.map(product => product.id);
+        let quantities = saleProducts.map(product => product.quantity);
+
+        // Logging para verificar que se envían los productos y cantidades correctas
+        console.log('Data being sent:', {
+            'products[]': productIds,
+            'quantities[]': quantities,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        });
+
+        // Enviar los datos al backend vía AJAX
+        $.ajax({
+            type: 'POST',
+            url: '{% url "confirm_sale" %}',
+            data: {
+                'products[]': productIds,
+                'quantities[]': quantities,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response) {
+                // Si hay productos vendidos con éxito o si la venta fue exitosa
+                if (response.success || (response.sold_products && response.sold_products.length > 0)) {
+                    alert('Venta confirmada con éxito.');
+                    // Reiniciar la lista de productos
+                    saleProducts = [];
+                    saveSaleProducts();
+                    renderSaleProductList();
+                    // Recargar la página para reflejar los cambios en la cantidad disponible de los productos
+                    location.href = '{% url "sales_report_day" %}';  // Redirigir al reporte de ventas del día
+                }
+                // Mostrar errores si los hay
+                if (response.errors && response.errors.length > 0) {
+                    alert(response.errors.join('\n'));
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Hubo un error al procesar la venta. Intenta de nuevo más tarde.');
+                // Limpiar la lista de productos incluso si hay un error
+                saleProducts = [];
+                saveSaleProducts();
+                renderSaleProductList();
+            }
+        });
+    }
+
+    // Función para guardar los productos seleccionados en localStorage
+    function saveSaleProducts() {
+        localStorage.setItem('saleProducts', JSON.stringify(saleProducts));
+    }
+
+    // Función para cargar los productos seleccionados desde localStorage
+    function loadSaleProducts() {
+        saleProducts = JSON.parse(localStorage.getItem('saleProducts')) || [];
+        renderSaleProductList();
+    }
+
+    // Cargar productos cuando la página se carga
+    document.addEventListener('DOMContentLoaded', loadSaleProducts);
+</script>
+{% endblock %}

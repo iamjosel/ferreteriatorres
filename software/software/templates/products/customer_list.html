@@ -1,0 +1,88 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<form method="GET" action="">
+    <div class="input-group mb-3">
+        <input type="text" name="q" class="form-control" placeholder="Busque por cédula, nit o apellido" value="{{ request.GET.q }}">
+        <button class="btn btn-primary" type="submit" title="Buscar clientes">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+</form>
+
+<div class="container">
+    <h2>Lista de Clientes</h2>
+    <a href="{% url 'customer_create' %}" class="btn btn-primary mb-3">Registrar Nuevo Cliente</a>
+    
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID/NIT</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Dirección</th>
+                <th>Correo</th>
+                <th>Número de Celular</th>
+                <th>Ciudad</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if object_list %}
+                {% for customer in object_list %}
+                <tr>
+                    <td>{{ customer.id_or_nit }}</td>
+                    <td>{{ customer.firstname }}</td>
+                    <td>{{ customer.lastname }}</td>
+                    <td>{{ customer.address }}</td>
+                    <td>{{ customer.email }}</td>
+                    <td>{{ customer.phone }}</td>
+                    <td>{{ customer.city }}</td>
+                    <td>
+                        <!-- Aquí podrías agregar opciones de editar o eliminar si es necesario -->
+                    </td>
+                </tr>   
+                {% endfor %}
+            {% else %} 
+                <tr>
+                    <td colspan="8">
+                        <h1>No se encontraron clientes con esos datos. Intenta con otras palabras clave.</h1>
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- Paginación -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?q={{ request.GET.q }}&page={{ page_obj.previous_page_number }}" aria-label="Anterior">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?q={{ request.GET.q }}&page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?q={{ request.GET.q }}&page={{ page_obj.next_page_number }}" aria-label="Siguiente">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}

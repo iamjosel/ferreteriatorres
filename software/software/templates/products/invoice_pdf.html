@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Factura</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            font-size: 16px;
+            line-height: 24px;
+            color: #555;
+        }
+        .title {
+            font-size: 45px;
+            color: #333;
+        }
+        .info-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+        .info-table td {
+            vertical-align: top;
+            padding: 5px;
+        }
+        .company-info, .invoice-info, .customer-info {
+            font-size: 12px;
+            line-height: 30px;
+        }
+        .heading {
+            background: #eee;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+            text-align: left;
+            padding: 10px 0;
+        }
+        .item {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+        .products-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        .products-table th, .products-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        .products-table th {
+            background-color: #f2f2f2;
+        }
+        .products-table td:nth-child(1),
+        .products-table td:nth-child(3),
+        .products-table td:nth-child(4),
+        .products-table td:nth-child(5) {
+            text-align: center;
+        }
+        .products-table td:nth-child(2) {
+            text-align: left;
+        }
+        .total {
+            border-top: 2px solid #eee;
+            font-weight: bold;
+            text-align: right;
+            padding-top: 10px;
+        }
+        .payment-method, .signature-box {
+            width: 50%;
+            font-size: 14px;
+        }
+        .payment-method {
+            float: left;
+        }
+        .signature-box {
+            float: right;
+            text-align: center;
+        }
+        .payment-method label {
+            margin-right: 15px;
+        }
+        .clear {
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <!-- Tabla para el título torresytorres y la información de la factura -->
+        <table class="info-table">
+            <tr>
+                <!-- Título torresytorres -->
+                <td class="title" style="width: 50%;">
+                    torresytorres
+                </td>
+                <!-- Información de la factura -->
+                <td class="invoice-info" style="text-align: right; width: 50%;">
+                    DATOS DE LA FACTURA<br>
+                    Número de Factura: {{ invoice.invoice_id }}<br> <!-- Mostrar el número de la factura -->
+                    {% for sale in sales %}
+                        Número de Venta: {{ sale.short_sale_id }}<br> <!-- Mostrar el número de la venta -->
+                    {% endfor %}
+                    Creada el: {{ invoice.issue_date }}<br>
+                    Vence el: {{ invoice.due_date }}
+                </td>
+            </tr>
+        </table>
+
+        <!-- Tabla para la información de la empresa y del cliente -->
+        <table class="info-table">
+            <tr>
+                <!-- Información de la empresa -->
+                <td class="company-info" style="width: 50%;">
+                    DATOS DE LA EMPRESA<br>
+                    Popayán - Cauca<br>
+                    NIT: 9999999999<br>
+                    Dirección: Calle 99 99, Barrio Bello Horizonte<br>
+                    Teléfono: 3143143144<br>
+                    Email: torresytorres@gmail.com
+                </td>
+                <!-- Información del cliente -->
+                <td class="customer-info" style="width: 50%;">
+                    DATOS DEL CLIENTE<br>
+                    Vendido a: ___________________________________<br>
+                    NIT/Identificación: _____________________________ <br>
+                    Dirección: ___________________________________<br>
+                    Teléfono: ____________________________________<br>
+                    Ciudad: _____________________________________<br>
+                    Correo: _____________________________________
+                </td>
+            </tr>
+        </table>
+
+        <!-- Tabla de productos -->
+        <table class="products-table">
+            <thead>
+                <tr class="heading">
+                    <th>#</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unidad</th>
+                    <th>Precio Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in invoice.invoice_items.all %}
+                <tr class="item">
+                    <td>{{ forloop.counter }}</td> <!-- Número del producto -->
+                    <td>{{ item.product_name }}</td> <!-- Nombre del producto -->
+                    <td>{{ item.quantity }}</td> <!-- Cantidad vendida -->
+                    <td>{{ item.unit_price }}</td> <!-- Precio unitario -->
+                    <td>{{ item.total_price }}</td> <!-- Total por producto -->
+                </tr>
+                {% endfor %}
+                <tr class="total">
+                    <td colspan="4">Total a pagar</td>
+                    <td>{{ invoice.total_amount|floatformat:2 }}</td> <!-- Total a pagar -->
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Método de pago y firma del vendedor (en tablas) -->
+        <table class="info-table">
+            <tr>
+                <!-- Método de pago -->
+                <td class="payment-method">
+                    Forma de Pago: 
+                    <label><input type="checkbox"> Efectivo: _____</label>
+                    <label><input type="checkbox"> Nequi: _____</label>
+                </td>
+                <!-- Firma del vendedor -->
+                <td class="signature-box">
+                    <span>Firma Vendedor</span><br><br>
+                    _________________________
+                </td>
+            </tr>
+        </table>
+        <div class="clear"></div>
+    </div>
+</body>
+</html>

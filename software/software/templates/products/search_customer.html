@@ -1,0 +1,66 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Buscar Cliente</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="text" name="customer_number" value="{{ request.POST.customer_number }}" class="form-control">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+
+    {% if customer_data %}
+        {% if customer_data.error %}
+            <div class="alert alert-danger">{{ customer_data.error }}</div>
+        {% else %}
+            <h3>Cliente encontrado</h3>
+            <form id="customer-selection-form">
+                <div class="form-group">
+                    <label for="firstname">Nombre:</label>
+                    <input type="text" id="firstname" name="firstname" class="form-control" value="{{ customer_data.firstname }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="lastname">Apellido:</label>
+                    <input type="text" id="lastname" name="lastname" class="form-control" value="{{ customer_data.lastname }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="address">Dirección:</label>
+                    <input type="text" id="address" name="address" class="form-control" value="{{ customer_data.address }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="email">Correo:</label>
+                    <input type="email" id="email" name="email" class="form-control" value="{{ customer_data.email }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Celular:</label>
+                    <input type="text" id="phone" name="phone" class="form-control" value="{{ customer_data.phone }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="city">Ciudad:</label>
+                    <input type="text" id="city" name="city" class="form-control" value="{{ customer_data.city }}" readonly>
+                </div>
+                <button type="submit" class="btn btn-success" name="confirm_selection">Confirmar Cliente</button>
+            </form>
+        {% endif %}
+    {% endif %}
+</div>
+
+<script>
+document.getElementById('confirm-selection').addEventListener('click', function() {
+    const customerData = {
+        firstname: document.getElementById('firstname').value,
+        lastname: document.getElementById('lastname').value,
+        address: document.getElementById('address').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        city: document.getElementById('city').value
+    };
+
+    // Guardar la información del cliente en la factura (puedes ajustar esto según cómo manejes la factura)
+    window.localStorage.setItem('customer', JSON.stringify(customerData));
+
+    // Redirigir a la página de factura o venta
+    window.location.href = '{% url "invoice_list" %}';
+});
+</script>
+{% endblock %}

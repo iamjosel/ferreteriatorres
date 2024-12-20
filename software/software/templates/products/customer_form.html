@@ -1,0 +1,12 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Registro de Clientes</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Guardar Registro</button>
+        <a href="{% url 'customer_list' %}" class="btn btn-secondary">Volver a la Lista</a>
+    </form>
+</div>
+{% endblock %}

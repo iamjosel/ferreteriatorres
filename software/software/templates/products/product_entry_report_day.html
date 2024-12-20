@@ -1,0 +1,39 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<h2>Reporte Diario de Ingreso de Productos - {{ selected_date }}</h2>
+{% if product_entries %}
+    <h3>Total de Productos Ingresados: {{ total_products }}</h3>
+    <h3>Total de Unidades Ingresadas: {{ total_quantity }}</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Nombre del Producto</th>
+                <th>Precio</th>
+                <th>Cantidades Ingresadas</th>
+                <th>Marca</th>
+                <th>Fecha Ingreso</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in product_entries %}
+            <tr>
+                <td>{{ entry.product.product_name }}</td>
+                <td>{{ entry.entry_price }}</td>
+                <td>{{ entry.entered_amount }}</td>
+                <td>{{ entry.product.brand }}</td>
+                <td>{{ entry.entry_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Botón Volver -->
+    <a href="{% url 'product_list' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Volver</a>
+    <!-- Botones de exportación -->
+    <a href="{% url 'export_product_entry_day_pdf' selected_date %}" class="btn btn-success"><i class="fas fa-file-pdf"></i> Exportar PDF</a>
+    <a href="{% url 'export_product_entry_day_excel' selected_date %}" class="btn btn-info"><i class="fas fa-file-excel"></i> Exportar Excel</a>
+{% else %}
+    <p>No se encontraron productos ingresados en esta fecha.</p>
+{% endif %}
+{% endblock %}

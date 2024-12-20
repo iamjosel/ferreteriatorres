@@ -1,0 +1,20 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<h1>{{ producto.product_name }}</h1>
+<p><strong>Id Producto:</strong> {{ product.id }}</p>
+<p><strong>Nombre del Producto:</strong> {{ product.product_name }}</p>
+<p><strong>Precio de Venta:</strong> {{ product.product_entries.latest.entry_price }}</p>
+<p><strong>Cantidad Disponible:</strong> {{ product.available_quantity }}</p>
+<p><strong>Marca:</strong> {{ product.brand }}</p>
+<p><strong>Fecha Ingreso:</strong> {{ product.product_entries.latest.entry_date}}</p>
+{% comment %}
+{% if producto.imagen %}
+    <img src="{{ producto.imagen.url }}" alt="Imagen del producto" style="max-width: 300px; max-height: 300px;">
+{% else %}
+    <p>No hay imagen disponible</p>
+{% endif %}
+{% endcomment %}
+
+<a class="btn btn-default" href="{% url 'product_list' %}">Volver</a>
+{% endblock %}

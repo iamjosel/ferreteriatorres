@@ -1,0 +1,32 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<h2>Reporte de Ventas Diarias - {{ report_date }}</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nombre del Producto</th>
+            <th>Precio Venta</th>
+            <th>Cantidades Vendidas</th>
+            <th>Marca</th>
+            <th>Fecha de Venta</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for sale in sales %}
+        <tr>
+            <td>{{ sale.product.product_name }}</td> <!-- Nombre del producto -->
+            <td>{{ sale.product.product_entries.last.entry_price }}</td> <!-- Precio de entrada -->
+            <td>{{ sale.quantity_sold }}</td> <!-- Cantidades vendidas -->
+            <td>{{ sale.product.brand }}</td> <!-- Marca del producto -->
+            <td>{{ sale.sale_date }}</td> <!-- Fecha de venta -->
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<h3>Total Unidades Vendidas: {{ total_sales_quantity }}</h3>
+<h3>Valor Total de Ventas: {{ total_sales_value }} pesos</h3>
+<!-- Botones de acción -->
+<a href="{% url 'product_list' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Volver</a>
+<a href="{% url 'sales_report_day_pdf' %}" class="btn btn-success"><i class="fas fa-file-pdf"></i> Exportar PDF</a>
+<a href="{% url 'sales_report_day_excel' %}" class="btn btn-info"><i class="fas fa-file-excel"></i> Exportar Excel</a>
+{% endblock %}

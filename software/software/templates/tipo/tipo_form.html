@@ -1,0 +1,22 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="form-group">
+                <label for="{{form2.nombre.name}}">{{form2.nombre.label}}</label>
+                {{form2.nombre}}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8 col-md-offset-2">
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">Guardar</button>
+            <a class="btn btn-default" href="{% url 'tipo_listar' %}">Cancelar</a>
+        </div>
+    </div>
+</form>
+{% endblock %}
